@@ -92,7 +92,7 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-bottom:30px
     <div class="tage" id="tage" role="radiogroup" aria-label="Abholtag"></div>
     <p class="hint" id="schluss"></p>
     <label style="margin-top:14px"><span>Uhrzeit der Abholung</span><select id="zeit" required><option value="">Bitte wählen…</option></select></label>
-    <p class="hint" style="margin-top:-6px">Bitte halten Sie sich ungefähr an die Uhrzeit, damit Ihr Kohl frisch bereitliegt.</p>
+    <p class="hint" style="margin-top:-6px"><b>Bitte kommen Sie pünktlich zur gewählten Uhrzeit</b>, damit jemand vor Ort ist und Ihnen den Kohl übergeben kann.</p>
 
     <h2>Ihre Angaben</h2>
     <label><span>Name</span><input id="name" autocomplete="name" maxlength="80" required></label>
@@ -198,7 +198,7 @@ $("#f").addEventListener("submit",async ev=>{
       <div class="card"><p style="margin:0 0 8px"><b>Abholung:</b> ${lang(tag)}, ${zeit} Uhr</p><p style="margin:0 0 8px">${liste}</p>
       <p style="margin:0"><b>Zusammen: ${eur(stueck*PREIS)}</b>, bezahlt wird bei Abholung.</p></div>
       <p>Familie Teigeler, ${ADRESSE}<br><a class="maps" href="${MAPS}" target="_blank" rel="noopener">📍 Route zum Hof starten</a></p>
-      <p class="hint">Bitte kommen Sie ungefähr zur vereinbarten Uhrzeit. Bei Rückfragen melden wir uns telefonisch, frühestens ${lang(addDays(jetzt().tag,1))} ab 10 Uhr.</p></div>`;
+      <p class="hint"><b>Bitte kommen Sie pünktlich zur gewählten Uhrzeit</b>, damit jemand vor Ort ist. Bei Rückfragen melden wir uns telefonisch, frühestens ${lang(addDays(jetzt().tag,1))} ab 10 Uhr.</p></div>`;
     scrollTo(0,0);
   }catch(e){
     console.error(e);btn.disabled=false;btn.textContent="Verbindlich vorbestellen";
