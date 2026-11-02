@@ -118,6 +118,7 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-bottom:30px
 const SORTEN=[["weisskohl","Weißkohl"],["rotkohl","Rotkohl"],["wirsing","Wirsing"],["rosenkohl","Rosenkohl"]];
 const PREIS=1.5, MAX=50, MIN=5, BESTELLSCHLUSS=17, TAGE=7;
 const ZEITEN=Array.from({length:19},(_,i)=>`${String(10+Math.floor(i/2)).padStart(2,"0")}:${i%2?"30":"00"}`); /* 10:00 bis 19:00 */
+const GESPERRT=["13:00","13:30"]; /* Mittagspause – nicht wählbar */
 const ADRESSE="Brückenweg 9, 34599 Neuental-Waltersbrück";
 const MAPS="https://www.google.com/maps/dir/?api=1&destination=50.996883,9.209952&travelmode=driving"; /* GPS-Punkt Hof Teigeler */
 
@@ -162,7 +163,7 @@ $("#sorten").addEventListener("click",e=>{const b=e.target.closest("[data-m]");i
 $("#tage").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;
   const[y,m,d]=b.dataset.t.split("-").map(Number);tag=new Date(y,m-1,d);drawTage()});
 $("#maps1").href=MAPS;
-$("#zeit").insertAdjacentHTML("beforeend",ZEITEN.map(z=>`<option value="${z}">${z} Uhr</option>`).join(""));
+$("#zeit").insertAdjacentHTML("beforeend",ZEITEN.filter(z=>!GESPERRT.includes(z)).map(z=>`<option value="${z}">${z} Uhr</option>`).join(""));
 drawSorten();drawTage();
 setInterval(drawTage,60000); /* springt um 17 Uhr automatisch weiter */
 
@@ -179,7 +180,7 @@ $("#f").addEventListener("submit",async ev=>{
   const stueck=Object.values(menge).reduce((a,b)=>a+b,0);
   const zeit=$("#zeit").value;
   if(stueck<MIN)return fehler(`Vorbestellen können Sie ab ${MIN} Köpfen. Kleinere Mengen sind immer vorrätig, die können Sie einfach so mitnehmen.`);
-  if(!zeit)return fehler("Bitte wählen Sie eine Uhrzeit für die Abholung.");
+  if(!zeit||GESPERRT.includes(zeit))return fehler("Bitte wählen Sie eine Uhrzeit für die Abholung.");
   if(name.length<2)return fehler("Bitte geben Sie Ihren Namen an.");
   if(tel.replace(/\D/g,"").length<6)return fehler("Bitte geben Sie eine Telefonnummer an, unter der wir Sie erreichen.");
   if(tag<fruehester()){drawTage();return fehler("Der Bestellschluss ist gerade vorbei. Bitte wählen Sie den Abholtag noch einmal.")}
