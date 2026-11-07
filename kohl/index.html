@@ -73,6 +73,14 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-
 .danke{text-align:center;padding:26px 16px}
 .danke h2{font-size:1.8rem;margin-top:0}
 .danke .card{text-align:left;padding:14px;margin:16px 0}
+.promo{position:fixed;inset:0;z-index:50;background:rgba(10,14,9,.72);display:flex;align-items:center;justify-content:center;padding:16px;animation:pf .25s ease}
+.promo[hidden]{display:none}
+.promo-box{position:relative;width:min(420px,100%);max-height:100%;display:flex;flex-direction:column;gap:10px;animation:pz .3s ease}
+.promo-box img{display:block;width:100%;height:auto;max-height:calc(100dvh - 110px);object-fit:contain;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.45)}
+.promo-x{position:absolute;top:-12px;right:-8px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#1c2318;font-size:1.9rem;line-height:1;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.promo-weiter{border:0;border-radius:12px;background:#f2c14e;color:#1c2318;font:700 1.05rem var(--f-body);padding:13px;cursor:pointer}
+@keyframes pf{from{opacity:0}}@keyframes pz{from{transform:scale(.94);opacity:0}}
+@media (prefers-reduced-motion:reduce){.promo,.promo-box{animation:none}}
 footer{color:var(--muted);font-size:.85rem;text-align:center;padding-bottom:30px}
 </style>
 </head>
@@ -109,6 +117,14 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-bottom:30px
     <p class="hint" style="text-align:center;margin-top:10px">Ihre Angaben nutzen wir nur für diese Bestellung und löschen sie 30 Tage nach der Abholung.</p>
   </form>
 </main>
+<!-- Werbe-Fenster Tannenbaumverkauf (verschwindet nach dem 12.12.2026 von selbst) -->
+<div class="promo" id="promo" role="dialog" aria-modal="true" aria-label="Weihnachtsbaumverkauf" hidden>
+  <div class="promo-box">
+    <button class="promo-x" id="promoX" type="button" aria-label="Schließen">×</button>
+    <img src="../tannenbaum-plakat.jpg" alt="Weihnachtsbaum-Hofverkauf bei Familie Teigeler: Freitag 11.12. 15–19 Uhr und Samstag 12.12. 11–15 Uhr, Brückenweg 9, Neuental-Waltersbrück" width="794" height="1123">
+    <button class="promo-weiter" id="promoWeiter" type="button">Weiter zur Kohl-Bestellung</button>
+  </div>
+</div>
 <footer class="wrap">Familie Teigeler · Neuental-Waltersbrück<br><a href="../impressum.html" style="color:inherit">Impressum</a> · <a href="../datenschutz.html" style="color:inherit">Datenschutz</a></footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -165,6 +181,19 @@ $("#tage").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(
 $("#maps1").href=MAPS;
 $("#zeit").insertAdjacentHTML("beforeend",ZEITEN.filter(z=>!GESPERRT.includes(z)).map(z=>`<option value="${z}">${z} Uhr</option>`).join(""));
 drawSorten();drawTage();
+/* Werbe-Fenster: einmal pro Besuch, bis einschließlich 12.12.2026 */
+(function(){
+  const p=$("#promo"); let gesehen=false;
+  try{gesehen=sessionStorage.getItem("promoTanne")==="1"}catch(_){}
+  if(gesehen||iso(jetzt().tag)>"2026-12-12")return;
+  const zu=()=>{p.hidden=true;document.body.style.overflow="";try{sessionStorage.setItem("promoTanne","1")}catch(_){}};
+  p.hidden=false;document.body.style.overflow="hidden";
+  $("#promoX").onclick=zu;$("#promoWeiter").onclick=zu;
+  p.addEventListener("click",e=>{if(e.target===p)zu()});
+  addEventListener("keydown",e=>{if(e.key==="Escape"&&!p.hidden)zu()});
+  $("#promoX").focus();
+})();
+
 setInterval(drawTage,60000); /* springt um 17 Uhr automatisch weiter */
 
 const CFG=self.FIREBASE_CONFIG;
